@@ -25,8 +25,27 @@ const joystick = {
   backward: document.getElementById("joystick-btn-backward"),
 }
 
-for (const [dir, btnEl] of Object.entries(joystick)) {
-  console.log(dir, btnEl)
+const joystickDataDirections = {
+  forward: {
+    linear: { x: 0.1, y: 0, z: 0 },
+    angular: { x: 0, y: 0, z: 0 },
+  },
+  backward: {
+    linear: { x: -0.1, y: 0, z: 0 },
+    angular: { x: 0, y: 0, z: 0 },
+  },
+  left: {
+    linear: { x: 0, y: 0, z: 0 },
+    angular: { x: 0, y: 0, z: 0.1 },
+  },
+  right: {
+    linear: { x: 0, y: 0, z: 0 },
+    angular: { x: 0, y: 0, z: -0.1 },
+  },
+  stop: {
+    linear: { x: 0, y: 0, z: 0 },
+    angular: { x: 0, y: 0, z: 0 },
+  },
 }
 
 let connected = false
@@ -70,11 +89,7 @@ var mapTopic = new ROSLIB.Topic({
 });
 
 velocityButton.addEventListener("click", () => {
-  if (!connected) {
-    alert('not connected')
-  }
-
-  const data = {
+  const speed = {
     linear: {
       x: Number(inputLinearX.value),
       y: Number(inputLinearY.value),
@@ -86,8 +101,7 @@ velocityButton.addEventListener("click", () => {
       z: Number(inputAngularZ.value),
     },
   }
-
-  velocityTopic.publish(new ROSLIB.Message(data))
+  setSpeed(speed)
 })
 
 buttonAuto.addEventListener("click", () => {
@@ -147,6 +161,24 @@ mapTopic.subscribe((message) => {
   console.log("[map] > ", message)
   drawMap(message)
 })
+
+function setSpeed(newSpeed) {
+  if (!connected) {
+    alert('not connected')
+    return
+  }
+
+  velocityTopic.publish(new ROSLIB.Message(newSpeed))
+}
+
+for (const [dir, btnEl] of Object.entries(joystick)) {
+  btnEl.addEventListener("mousedown", () => {
+    setSpeed(joystickDataDirections[dir])
+  })
+  btnEl.addEventListener("mouseup", () => {
+    setSpeed(joystickDataDirections['stop'])
+  })
+}
 
 function drawMap(map) {
   const canvas = mapEl;
