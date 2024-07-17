@@ -240,47 +240,55 @@ for (const [dir, btnEl] of Object.entries(joystick)) {
      
      
      
-        // Function to draw the map on the canvas
-        function drawMap(map) {
-            var canvas = document.getElementById('turtleCanvas');
-            var ctx = canvas.getContext('2d');
+
+
+       function drawMap(map) {
             var width = map.info.width;
             var height = map.info.height;
             var data = map.data;
 
-            // Adjust canvas size to fit the map
-            canvas.width = width;
-            canvas.height = height;
+            // Create imageData object to store map data
+            var imageData = ctx.createImageData(width, height);
+
+            for (var y = 0; y < height; y++) {
+                for (var x = 0; x < width; x++) {
+                    var index = x + y * width;
+                    var value = data[index];
+                    
+                    var gray; // Declare the gray variable
+                    
+                    // Determine the color based on the value
+                    if (value === -1) {
+                        gray = 127; // Gray for unknown cells
+                    } else if (value > 50) {
+                        gray = 0; // Black for occupied cells
+                    } else {
+                        gray = 255; // White for free cells
+                    }
+
+                    // Set the pixel color in the image data object
+                    var pixelIndex = (x + (height - y - 1) * width) * 4;
+                    imageData.data[pixelIndex] = gray;
+                    imageData.data[pixelIndex + 1] = gray;
+                    imageData.data[pixelIndex + 2] = gray;
+                    imageData.data[pixelIndex + 3] = 255; // Fully opaque
+                }
+            }
+
+            // Clear the entire canvas
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
             
+            // Create a temporary canvas to draw the imageData and scale it
+            var tempCanvas = document.createElement('canvas');
+            var tempCtx = tempCanvas.getContext('2d');
+            tempCanvas.width = width;
+            tempCanvas.height = height;
+            tempCtx.putImageData(imageData, 0, 0);
 
-            // Create an image data object for the map
-          var imageData = ctx.createImageData(width, height);
+            // Calculate the scaling factor to fit the map into the canvas
+            var scaleX = canvas.width / width;
+            var scaleY = canvas.height / height;
 
-		for (var y = 0; y < height; y++) {
-		    for (var x = 0; x < width; x++) {
-			var index = x + y * width;
-			var value = data[index];
-			
-			var gray; // Declare the gray variable
-			
-			// Determine the color based on the value
-			if (value === -1) {
-			    gray = 127; // Gray for unknown cells
-			} else if (value > 50) {
-			    gray = 0; // Black for occupied cells
-			} else {
-			    gray = 255; // White for free cells
-			}
-
-			// Set the pixel color in the image data object
-			var pixelIndex = (x + (height - y - 1) * width) * 4;
-			imageData.data[pixelIndex] = gray;
-			imageData.data[pixelIndex + 1] = gray;
-			imageData.data[pixelIndex + 2] = gray;
-			imageData.data[pixelIndex + 3] = 255; // Fully opaque
-		    }
-		}
-
-		// Put the image data on the canvas
-		ctx.putImageData(imageData, 0, 0);
+            // Draw the scaled image onto the main canvas
+            ctx.drawImage(tempCanvas, 0, 0, width, height, 0, 0, canvas.width, canvas.height);
         }
