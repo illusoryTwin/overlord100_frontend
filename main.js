@@ -180,7 +180,7 @@ for (const [dir, btnEl] of Object.entries(joystick)) {
   })
 }
 
-function drawMap(map) {
+/*function drawMap(map) {
   const canvas = mapEl;
   const ctx = canvas.getContext('2d');
 
@@ -236,4 +236,51 @@ function drawMap(map) {
   ctx.fillStyle = 'black';
   ctx.fillText('X', canvas.width - 20, 20);
   ctx.fillText('Y', 20, canvas.height - 20);
-}
+}*/
+     
+     
+     
+        // Function to draw the map on the canvas
+        function drawMap(map) {
+            var canvas = document.getElementById('turtleCanvas');
+            var ctx = canvas.getContext('2d');
+            var width = map.info.width;
+            var height = map.info.height;
+            var data = map.data;
+
+            // Adjust canvas size to fit the map
+            canvas.width = width;
+            canvas.height = height;
+            
+
+            // Create an image data object for the map
+          var imageData = ctx.createImageData(width, height);
+
+		for (var y = 0; y < height; y++) {
+		    for (var x = 0; x < width; x++) {
+			var index = x + y * width;
+			var value = data[index];
+			
+			var gray; // Declare the gray variable
+			
+			// Determine the color based on the value
+			if (value === -1) {
+			    gray = 127; // Gray for unknown cells
+			} else if (value > 50) {
+			    gray = 0; // Black for occupied cells
+			} else {
+			    gray = 255; // White for free cells
+			}
+
+			// Set the pixel color in the image data object
+			var pixelIndex = (x + (height - y - 1) * width) * 4;
+			imageData.data[pixelIndex] = gray;
+			imageData.data[pixelIndex + 1] = gray;
+			imageData.data[pixelIndex + 2] = gray;
+			imageData.data[pixelIndex + 3] = 255; // Fully opaque
+		    }
+		}
+
+		// Put the image data on the canvas
+		ctx.putImageData(imageData, 0, 0);
+        }
