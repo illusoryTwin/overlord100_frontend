@@ -11,6 +11,7 @@ const inputAngularZ = document.getElementById("input-angular-z")
 const velocityButton = document.getElementById("velocity-button")
 const buttonAuto = document.getElementById("btn-auto")
 const buttonManual = document.getElementById("btn-manual")
+const buttonSaveMap = document.getElementById("save-map-button")
 const buttonClearLogs = document.getElementById("clear-logs-btn")
 const statusText = document.getElementById("status")
 const logsEl = document.getElementById("logs")
@@ -78,8 +79,11 @@ const changeModeService = new ROSLIB.Service({
 
 const saveMapService = new ROSLIB.Service({
   ros: ros, 
-  name: 
-})
+  // name: '/save_map',
+  name: '/slam_toolbox/save_map',
+  serviceType: 'slam_toolbox/srv/SaveMap'
+  // serviceType: 'slam_toolbox/SaveMap '
+});
 
 const logsTopic = new ROSLIB.Topic({
   ros: ros,
@@ -124,6 +128,27 @@ buttonManual.addEventListener("click", () => {
     console.log("Set manual mode response:", res)
   });
 })
+
+buttonSaveMap.addEventListener("click", () => {
+  const mapName = prompt("Enter map name:");
+  if (mapName) {
+    const req = new ROSLIB.ServiceRequest({
+      name: { data: mapName }
+    });
+    console.log("Saving map with name:", mapName)
+    saveMapService.callService(req, (res) => {
+      console.log("Save map response:", res)
+    });
+  }
+})
+
+// buttonSaveMap.addEventListener("click", () => {
+//   const req = new ROSLIB.ServiceRequest({ mode: 1 });
+//   console.log("Saving the map...")
+//   saveMapService.callService(req, (res) => {
+//     console.log("Saved the map:", res)
+//   });
+// })
 
 /**
  * @param {({ level: number, node_name: string, message: string })} log 
