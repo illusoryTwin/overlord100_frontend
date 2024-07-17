@@ -243,19 +243,19 @@ for (const [dir, btnEl] of Object.entries(joystick)) {
 
 
        function drawMap(map) {
-            const width = map.info.width;
-            const height = map.info.height;
-            const data = map.data;
+            var width = map.info.width;
+            var height = map.info.height;
+            var data = map.data;
 
             // Create imageData object to store map data
-            const imageData = ctx.createImageData(width, height);
+            var imageData = ctx.createImageData(width, height);
 
-            for (let y = 0; y < height; y++) {
-                for (let x = 0; x < width; x++) {
-                    const index = x + y * width;
-                    const value = data[index];
+            for (var y = 0; y < height; y++) {
+                for (var x = 0; x < width; x++) {
+                    var index = x + y * width;
+                    var value = data[index];
                     
-                    const gray; // Declare the gray variable
+                    var gray; // Declare the gray variable
                     
                     // Determine the color based on the value
                     if (value === -1) {
@@ -267,7 +267,7 @@ for (const [dir, btnEl] of Object.entries(joystick)) {
                     }
 
                     // Set the pixel color in the image data object
-                    const pixelIndex = (x + (height - y - 1) * width) * 4;
+                    var pixelIndex = (x + (height - y - 1) * width) * 4;
                     imageData.data[pixelIndex] = gray;
                     imageData.data[pixelIndex + 1] = gray;
                     imageData.data[pixelIndex + 2] = gray;
@@ -279,15 +279,15 @@ for (const [dir, btnEl] of Object.entries(joystick)) {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             
             // Create a temporary canvas to draw the imageData and scale it
-            const tempCanvas = document.createElement('canvas');
-            const tempCtx = tempCanvas.getContext('2d');
+            var tempCanvas = document.createElement('canvas');
+            var tempCtx = tempCanvas.getContext('2d');
             tempCanvas.width = width;
             tempCanvas.height = height;
             tempCtx.putImageData(imageData, 0, 0);
 
             // Calculate the scaling factor to fit the map into the canvas
-            const scaleX = canvas.width / width;
-            const scaleY = canvas.height / height;
+            var scaleX = canvas.width / width;
+            var scaleY = canvas.height / height;
 
             // Draw the scaled image onto the main canvas
             ctx.drawImage(tempCanvas, 0, 0, width, height, 0, 0, canvas.width, canvas.height);
